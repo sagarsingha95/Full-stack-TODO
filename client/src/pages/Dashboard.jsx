@@ -2,7 +2,7 @@ import { useState, useMemo, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, Reorder } from "framer-motion";
 import toast from "react-hot-toast";
 import {
   Plus,
@@ -14,6 +14,7 @@ import {
   ListTodo,
   X,
   Filter,
+  GripVertical,
 } from "lucide-react";
 
 import {
@@ -124,6 +125,13 @@ useEffect(() => {
       return true;
     });
   }, [data, statusFilter, monthFilter, yearFilter]);
+
+  /* REORDERABLE TASKS STATE */
+  const [orderedTasks, setOrderedTasks] = useState([]);
+
+  useEffect(() => {
+    setOrderedTasks(filteredTasks);
+  }, [filteredTasks]);
 
   /* STATS */
   const total = data.length;
@@ -296,37 +304,40 @@ useEffect(() => {
           </AnimatePresence>
         </motion.div>
 
-        {/* TASKS */}
+        {/* TASKS - Now with Reorder.Group */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.6 }}
         >
-          {filteredTasks.length === 0 ? (
+          {orderedTasks.length === 0 ? (
             <EmptyState />
           ) : (
-            <div className="space-y-2 sm:space-y-3">
-              <AnimatePresence mode="popLayout">
-                {filteredTasks.map((task, index) => (
-                  <TaskCard
-                    key={task._id}
-                    task={task}
-                    index={index}
-                    onEdit={() => {
-                      setEditingTask(task);
-                      setTitle(task.title);
-                      setDescription(task.description || "");
-                      setCategory(task.category);
-                      setShowModal(true);
-                    }}
-                    onDelete={() => deleteMutation.mutate(task._id)}
-                    onToggleComplete={() =>
-                      updateMutation.mutate({ _id: task._id, completed: true })
-                    }
-                  />
-                ))}
-              </AnimatePresence>
-            </div>
+            <Reorder.Group 
+              axis="y" 
+              values={orderedTasks} 
+              onReorder={setOrderedTasks}
+              className="space-y-2 sm:space-y-3"
+            >
+              {orderedTasks.map((task, index) => (
+                <TaskCard
+                  key={task._id}
+                  task={task}
+                  index={index}
+                  onEdit={() => {
+                    setEditingTask(task);
+                    setTitle(task.title);
+                    setDescription(task.description || "");
+                    setCategory(task.category);
+                    setShowModal(true);
+                  }}
+                  onDelete={() => deleteMutation.mutate(task._id)}
+                  onToggleComplete={() =>
+                    updateMutation.mutate({ _id: task._id, completed: true })
+                  }
+                />
+              ))}
+            </Reorder.Group>
           )}
         </motion.div>
       </div>
@@ -514,20 +525,39 @@ const StatCard = ({ title, value, icon, delay, linear, color }) => (
   </motion.div>
 );
 
-/* TASK CARD */
+/* TASK CARD - Now using Reorder.Item */
 const TaskCard = ({ task, index, onEdit, onDelete, onToggleComplete }) => (
-  <motion.div
-    layout
+  <Reorder.Item
+    value={task}
+    id={task._id}
     initial={{ opacity: 0, x: -20 }}
     animate={{ opacity: 1, x: 0 }}
     exit={{ opacity: 0, x: 20, scale: 0.9 }}
     transition={{ delay: index * 0.05, type: "spring", stiffness: 200 }}
     whileHover={{ scale: 1.01 }}
-    className={`bg-linear-to-r from-white/5 to-white/2 backdrop-blur-sm border border-white/10 rounded-xl p-3 sm:p-4 hover:border-purple-500/30 transition-all ${
+    whileDrag={{ scale: 1.05, zIndex: 50 }}
+    dragListener={false}
+    dragConstraints={{ top: 0, bottom: 0 }}
+    className={`bg-linear-to-r from-white/5 to-white/2 backdrop-blur-sm border border-white/10 rounded-xl p-3 sm:p-4 hover:border-purple-500/30 transition-all cursor-default ${
       task.completed ? 'opacity-60' : ''
     }`}
   >
     <div className="flex items-start gap-3">
+      {/* Drag Handle */}
+      <Reorder.Item
+        value={task}
+        id={task._id}
+        as="div"
+        className="mt-0.5 cursor-grab active:cursor-grabbing"
+      >
+        <motion.div
+          whileHover={{ scale: 1.1 }}
+          className="text-gray-500 hover:text-purple-400 transition-colors"
+        >
+          <GripVertical size={16} className="sm:w-5 sm:h-5" />
+        </motion.div>
+      </Reorder.Item>
+
       {/* Checkbox */}
       <motion.div
         whileHover={{ scale: 1.1 }}
@@ -590,7 +620,7 @@ const TaskCard = ({ task, index, onEdit, onDelete, onToggleComplete }) => (
         </motion.button>
       </div>
     </div>
-  </motion.div>
+  </Reorder.Item>
 );
 
 /* EMPTY STATE */
