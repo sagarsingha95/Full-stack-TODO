@@ -3,6 +3,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence, Reorder } from "framer-motion";
+import { House } from "lucide-react";
 import toast from "react-hot-toast";
 import {
   Plus,
@@ -65,11 +66,7 @@ const Dashboard = () => {
     },
   });
 
-useEffect(() => {
-  console.log(name);
-  
-  
-}, [name]);
+
 
   const updateMutation = useMutation({
     mutationFn: updateTask,
@@ -111,6 +108,7 @@ useEffect(() => {
     setDescription("");
     setCategory("Work");
   };
+  
 
   /* FILTERED TASKS */
   const filteredTasks = useMemo(() => {
@@ -193,6 +191,9 @@ useEffect(() => {
               <span className="hidden sm:inline">Add Task</span>
               <span className="sm:hidden">Add</span>
             </motion.button>
+            <a href="/"><motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }} className="bg-linear-to-r from-purple-600 to-pink-500 px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg text-xs sm:text-sm shadow-lg shadow-purple-500/30 hover:shadow-purple-500/50 transition-all flex items-center gap-2"><House />Home</motion.button></a>
 
             <motion.button
               whileHover={{ scale: 1.05 }}
@@ -204,9 +205,6 @@ useEffect(() => {
               <span className="hidden sm:inline">Logout</span>
             </motion.button>
             
-            <a href="/"><motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }} className="bg-linear-to-r from-purple-600 to-pink-500 px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg text-xs sm:text-sm shadow-lg shadow-purple-500/30 hover:shadow-purple-500/50 transition-all">Home</motion.button></a>
           </motion.div>
         </motion.div>
 
