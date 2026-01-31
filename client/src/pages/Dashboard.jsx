@@ -1,6 +1,6 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { useSelector, useDispatch } from "react-redux";
+import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import toast from "react-hot-toast";
@@ -32,7 +32,6 @@ const MONTHS = [
 ];
 
 const Dashboard = () => {
-  const { user } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
@@ -44,6 +43,7 @@ const Dashboard = () => {
   const [description, setDescription] = useState("");
   const [category, setCategory] = useState("Work");
   const [showFilters, setShowFilters] = useState(false);
+  const [name,setname] = useState(JSON.parse(localStorage.getItem("user")).name);
 
   const [statusFilter, setStatusFilter] = useState("all");
   const [monthFilter, setMonthFilter] = useState("");
@@ -63,6 +63,12 @@ const Dashboard = () => {
       queryClient.invalidateQueries(["tasks"]);
     },
   });
+
+useEffect(() => {
+  console.log(name);
+  
+  
+}, [name]);
 
   const updateMutation = useMutation({
     mutationFn: updateTask,
@@ -151,7 +157,7 @@ const Dashboard = () => {
               transition={{ delay: 0.2 }}
               className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold bg-linear-to-r from-purple-400 via-pink-400 to-purple-400 bg-clip-text text-transparent"
             >
-              Welcome, {user?.name} 👋
+              Welcome, {name} 
             </motion.h1>
             <motion.p 
               initial={{ opacity: 0 }}
