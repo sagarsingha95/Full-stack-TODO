@@ -224,8 +224,8 @@ This project is licensed under the **MIT License**.
 **Sagar Singha**
 Frontend / Full‑Stack Developer
 
-* GitHub: [https://github.com/your-username](https://github.com/your-username)
-* LinkedIn: [https://linkedin.com/in/your-profile](https://linkedin.com/in/your-profile)
+* GitHub: [https://github.com/your-username](https://github.com/sagarsingha95)
+* LinkedIn: [https://linkedin.com/in/your-profile](https://www.linkedin.com/in/sagar-singha-6683b420a/)
 
 ---
 
